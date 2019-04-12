@@ -1,6 +1,6 @@
 // includes
-#include "/Users/harriszambo/github/ProiectOC/senzors/senzorDistanta/senzorDistanta.ino"
-
+#include "C:\Users\Dragan\Desktop\Proiecte arduino\ProiectOC\senzors\senzorDistanta\senzorDistanta.ino"
+#include <AFMotor.h>
 // distance sensors
 // VCC = 5V
 #define distanceTriggerPin 10
@@ -11,6 +11,15 @@ senzorDistanta senzDistFront = senzorDistanta(distanceTriggerPin, distanceEchoFr
 senzorDistanta senzDistLeft = senzorDistanta(distanceTriggerPin, distanceEchoLeftPin);
 senzorDistanta senzDistRight = senzorDistanta(distanceTriggerPin, distanceEchoRightPin);
 
+
+//MOTORS
+#define PORTLEFT 1
+#define PORTRIGHT 2
+
+AF_DCMotor motorLeft(PORTLEFT);
+AF_DCMotor motorRight(PORTRIGHT);
+
+
 void setup() {
   Serial.begin(9600);
   
@@ -19,6 +28,8 @@ void setup() {
   pinMode(distanceEchoFrontPin, INPUT);
   pinMode(distanceEchoLeftPin, INPUT);
   pinMode(distanceEchoRightPin, INPUT);
+  motorLeft.setSpeed(255);
+  motorRight.setSpeed(255);
 }
 
 void loop() {
@@ -30,4 +41,16 @@ void loop() {
   Serial.print("Left"); Serial.println(senzDistLeft.getCentimeters());
   Serial.print("Front"); Serial.println(senzDistFront.getCentimeters());
   Serial.print("Right"); Serial.println(senzDistRight.getCentimeters());
+
+  motorLeft.run(FORWARD);
+  motorRight.run(FORWARD);
+  
+  if(senzDistFront.getCentimeters()<10)
+  {
+    motorLeft.setSpeed(0);
+  }
+  else
+  {
+    motorLeft.setSpeed(255);
+  }
 }
