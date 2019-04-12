@@ -10,7 +10,7 @@ public:
   }
 
   void readDistance();
-  int getCentimeters();
+  float getCentimeters();
 };
 
 void senzorDistanta::readDistance(){
@@ -21,6 +21,6 @@ void senzorDistanta::readDistance(){
   distance = pulseIn(echoPin, HIGH);
 }
 
-int senzorDistanta::getCentimeters(){
+float senzorDistanta::getCentimeters(){
   return distance/2/29.1;
 }
