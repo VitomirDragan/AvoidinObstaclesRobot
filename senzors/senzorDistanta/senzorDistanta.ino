@@ -4,23 +4,22 @@ private:
   int echoPin;
   int distance;
 public:
-  senzorDistanta(int trig, int echo){
+  senzorDistanta(int trig, int echo)
+  {
     triggerPin = trig;
     echoPin = echo;
   }
 
-  void readDistance();
-  int getCentimeters();
+  int readDistance();
 };
 
-void senzorDistanta::readDistance(){
-  digitalWrite(triggerPin, HIGH);
+int senzorDistanta::readDistance(){
+  digitalWrite(triggerPin, LOW);
+  delayMicroseconds(2);
+  digitalWrite(triggerPin,HIGH);
   delayMicroseconds(10);
-  digitalWrite(triggerPin,LOW);
+  digitalWrite(triggerPin, LOW);
 
   distance = pulseIn(echoPin, HIGH);
-}
-
-int senzorDistanta::getCentimeters(){
-  return distance/2/29.1;
+  return distance*0.034/2;
 }
