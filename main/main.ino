@@ -1,66 +1,110 @@
 // includes
-#include "C:\Users\Dragan\Desktop\Proiecte arduino\ProiectOC\senzors\senzorDistanta\senzorDistanta.ino"
+#include "/Users/harriszambo/github/ProiectOC/movement/movement/movement.ino"
+#include "/Users/harriszambo/github/ProiectOC/movement/bluetoothFunctionality/bluetoothFunctionality.ino"
 #include <AFMotor.h>
+// movement
+Movement movement;
+#define SPEED_HIGH 255
+#define SPEED_LOW 150
 
-
-// distance sensors
-// VCC = 5V
-#define distanceTriggerPin 10
-#define distanceEchoFrontPin A0
-#define distanceEchoLeftPin A1
-#define distanceEchoRightPin A2
-senzorDistanta senzDistFront = senzorDistanta(distanceTriggerPin, distanceEchoFrontPin);
-senzorDistanta senzDistLeft = senzorDistanta(distanceTriggerPin, distanceEchoLeftPin);
-senzorDistanta senzDistRight = senzorDistanta(distanceTriggerPin, distanceEchoRightPin);
-
-
-//MOTORS
-#define PORTLEFT 1
-#define PORTRIGHT 2
-
-AF_DCMotor motorLeft(PORTLEFT);
-AF_DCMotor motorRight(PORTRIGHT);
-
+// bluetooth
+BluetoothFunctionality bluetooth;
 
 void setup() {
+  AF_DCMotor motorLeft(2);
+  AF_DCMotor motorRight(3);
   Serial.begin(9600);
-  
-  // distance sensors
-  pinMode(distanceTriggerPin, OUTPUT);
-  pinMode(distanceEchoFrontPin, INPUT);
-  pinMode(distanceEchoLeftPin, INPUT);
-  pinMode(distanceEchoRightPin, INPUT);
-  motorLeft.setSpeed(255);
-  motorRight.setSpeed(255);
 }
 
 void loop() {
-  // distance sensors
-  //senzDistLeft.readDistance();
-  senzDistFront.readDistance();
-  //senzDistRight.readDistance();
-  
-  Serial.print("Left  "); Serial.println(senzDistLeft.getCentimeters());
-  Serial.print("Front "); Serial.println(senzDistFront.getCentimeters());
-  Serial.print("Right "); Serial.println(senzDistRight.getCentimeters());
-  Serial.println();
+  bluetooth.readFromBluetoothDevice();
 
-  motorLeft.run(FORWARD);
-  motorRight.run(FORWARD);
-  
-  Serial.print("Left"); Serial.println(senzDistLeft.getCentimeters());
-  Serial.print("Front"); Serial.println(senzDistFront.getCentimeters());
-  Serial.print("Right"); Serial.println(senzDistRight.getCentimeters());
+  if(bluetooth.automatic){
+    movement.citesteDistanta();
+    movement.ocolesteObstacol();
+  }else{
+    if(bluetooth.up)
+    {
 
-  motorLeft.run(FORWARD);
-  motorRight.run(FORWARD);
+        motorLeft.run(FORWARD);
+        motorRight.run(FORWARD);
+
+        motorRight.setSpeed(SPEED_HIGH);  
+        motorLeft.setSpeed(SPEED_HIGH);
+    }
+    
+    if(bluetooth.down)
+    {
+        motorLeft.run(BACKWARD);
+        motorRight.run(BACKWARD);
+
+        motorRight.setSpeed(SPEED_HIGH);  
+        motorLeft.setSpeed(SPEED_HIGH);
+    }
+    
+    if(bluetooth.left)
+    {
+      motorLeft.run(FORWARD);
+      motorRight.run(FORWARD);
   
-  if(senzDistFront.getCentimeters()<10)
-  {
-    motorLeft.setSpeed(0);
-  }
-  else
-  {
-    motorLeft.setSpeed(255);
+      motorRight.setSpeed(SPEED_HIGH);  
+     motorLeft.setSpeed(0);
+    }
+    
+    if(bluetooth.right)
+    {
+      motorLeft.run(FORWARD);
+      motorRight.run(FORWARD);
+
+      motorRight.setSpeed(0);  
+      motorLeft.setSpeed(SPEED_HIGH);
+    }
+    
+    if(bluetooth.up && bluetooth.left)
+    {
+      motorLeft.run(FORWARD);
+      motorRight.run(FORWARD);
+
+      motorRight.setSpeed(SPEED_HIGH);  
+      motorLeft.setSpeed(SPEED_LOW);
+      Serial.println("fata-stanga");
+    }
+    
+    if(bluetooth.up && bluetooth.right)
+    {
+      motorLeft.run(FORWARD);
+      motorRight.run(FORWARD);
+    
+      motorRight.setSpeed(100);
+      motorLeft.setSpeed(SPEED_HIGH);
+      Serial.println("fata-dreapta");
+    }
+    
+     if(bluetooth.down && bluetooth.left)
+     {
+        motorLeft.run(BACKWARD);
+        motorRight.run(BACKWARD);
+  
+        motorRight.setSpeed(SPEED_HIGH);  
+        motorLeft.setSpeed(SPEED_LOW);
+        Serial.println("spate-stanga");
+    }
+    
+    if(bluetooth.down && bluetooth.right)
+     {
+       motorLeft.run(BACKWARD);
+       motorRight.run(BACKWARD);
+       
+
+       motorRight.setSpeed(100);  
+       motorLeft.setSpeed(SPEED_HIGH);
+       Serial.println("spate-dreapta");
+     }
+     
+      if(!bluetooth.down && !bluetooth.right && !bluetooth.up && !bluetooth.left)
+      {
+        motorRight.setSpeed(0);  
+        motorLeft.setSpeed(0);
+      }
   }
 }
