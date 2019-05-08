@@ -1,5 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.zamboharrisgmail.mobile_app">
+    package="com.zamboharrisgmail.mobile_app"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-sdk tools:overrideLibrary="io.github.edufolly.flutterbluetoothserial"/>
 
     <!-- io.flutter.app.FlutterApplication is an android.app.Application that
          calls FlutterMain.startInitialization(this); in its onCreate method.
@@ -30,4 +33,5 @@
             </intent-filter>
         </activity>
     </application>
+
 </manifest>

@@ -1,6 +1,8 @@
 // includes
 #include "C:\Users\Dragan\Desktop\Proiecte arduino\ProiectOC\senzors\senzorDistanta\senzorDistanta.ino"
 #include <AFMotor.h>
+
+
 // distance sensors
 // VCC = 5V
 #define distanceTriggerPin 10
@@ -34,9 +36,17 @@ void setup() {
 
 void loop() {
   // distance sensors
-  senzDistLeft.readDistance();
+  //senzDistLeft.readDistance();
   senzDistFront.readDistance();
-  senzDistRight.readDistance();
+  //senzDistRight.readDistance();
+  
+  Serial.print("Left  "); Serial.println(senzDistLeft.getCentimeters());
+  Serial.print("Front "); Serial.println(senzDistFront.getCentimeters());
+  Serial.print("Right "); Serial.println(senzDistRight.getCentimeters());
+  Serial.println();
+
+  motorLeft.run(FORWARD);
+  motorRight.run(FORWARD);
   
   Serial.print("Left"); Serial.println(senzDistLeft.getCentimeters());
   Serial.print("Front"); Serial.println(senzDistFront.getCentimeters());
