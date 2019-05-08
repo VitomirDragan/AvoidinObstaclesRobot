@@ -1,5 +1,5 @@
 // includes
-#include "/Users/harriszambo/github/ProiectOC/senzors/senzorDistanta/senzorDistanta.ino"
+#include "C:\Users\Dragan\Desktop\Proiecte arduino\ProiectOC\senzors\senzorDistanta\senzorDistanta.ino"
 #include <AFMotor.h>
 
 
@@ -48,12 +48,19 @@ void loop() {
   motorLeft.run(FORWARD);
   motorRight.run(FORWARD);
   
-  if(senzDistFront.getCentimeters()<20)
+  Serial.print("Left"); Serial.println(senzDistLeft.getCentimeters());
+  Serial.print("Front"); Serial.println(senzDistFront.getCentimeters());
+  Serial.print("Right"); Serial.println(senzDistRight.getCentimeters());
+
+  motorLeft.run(FORWARD);
+  motorRight.run(FORWARD);
+  
+  if(senzDistFront.getCentimeters()<10)
   {
     motorLeft.setSpeed(0);
   }
   else
   {
-    motorLeft.setSpeed(1000);
+    motorLeft.setSpeed(255);
   }
 }
