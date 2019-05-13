@@ -1,125 +1,176 @@
 import 'package:flutter/material.dart';
+
 import 'BluetoothFunctionality.dart';
+import 'SensorInfoRoute.dart';
+
+enum _messageToSend{
+  stop,
+  automatic,
+
+  up,
+  down,
+  left,
+  right,
+
+  up_left,
+  up_right,
+  down_left,
+  down_right
+}
 
 class ControlsInterface extends StatefulWidget{
   _ControlsState createState() {
     return _ControlsState();
   }
+
+  /// push secondPage
+  static void pushSecondPage(){
+    _ControlsState.pushSecondPage();
+  }
+
+
+  // get bluetooth device name
+  static String getBluetoothDeviceName(){
+    return _ControlsState.getBluetoothDeviceName();
+  }
+
+  static bool getAutomatic(){
+    return _ControlsState.automatic;
+  }
+
+  static void automaticPress(){
+    _ControlsState._automaticPress();
+  }
+
 }
 
 class _ControlsState extends State<ControlsInterface>{
 
-  BluetoothFunctionality _bluetoothDevice = new BluetoothFunctionality();
+  static BluetoothFunctionality _bluetoothDevice = new BluetoothFunctionality();
 
-  bool _up = false;
-  bool _down = false;
-  bool _left = false;
-  bool _right = false;
-  bool _automatic = false;
+  static bool _up = false;
+  static bool _down = false;
+  static bool _left = false;
+  static bool _right = false;
+  static bool automatic = false;
+  static BuildContext _context;
 
 
   /// build function
   Widget build(BuildContext context){
-    return Container(
-        child: Column(
-          children: <Widget>[
-            Row(
+    _context = context;
 
-              // system information
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Robot Remote"),
+        actions: <Widget>[
+          IconButton(
+              icon: Icon(Icons.list),
+              onPressed: ControlsInterface.pushSecondPage
+          ),
+        ],
+      ),
+      body: Container(
+          child: Column(
               children: <Widget>[
+                Row(
 
-                // connected device information
-                Container(
-                  child: Column(
-                    children: <Widget>[
-                      Text(
-                        "Connected to:",
-                        style: TextStyle(
-                          fontSize: 20
-                        ),
+                  // system information
+                  children: <Widget>[
+
+                    // connected device information
+                    Container(
+                      child: Column(
+                        children: <Widget>[
+                          Text(
+                            "Connected to:",
+                            style: TextStyle(
+                                fontSize: 20
+                            ),
+                          ),
+                          Text(
+                            _bluetoothDevice.getBluetoothDeviceName(),
+                            style: TextStyle(
+                                fontSize: 30,
+                                fontWeight: FontWeight.bold
+                            ),
+                          )
+                        ],
+                        crossAxisAlignment: CrossAxisAlignment.start,
                       ),
-                      Text(
-                        _bluetoothDevice.getBluetoothDeviceName(),
-                        style: TextStyle(
-                          fontSize: 30,
-                          fontWeight: FontWeight.bold
-                        ),
+                      //padding: EdgeInsets.only(top: 20),
+                    ),
+
+                    Container(
+                      child: GestureDetector(
+                        child: buildArrowIcons(Icons.font_download, automatic, 60),
+                        onTapDown: automaticPress,
+                      ),
+                    ),
+
+                    // controls information
+                    Container(
+                      child: Column(
+                        children: <Widget>[
+                          Text("Automatic: " + automatic.toString()),
+                          Text("Up: " + _up.toString()),
+                          Text("Down: " + _down.toString()),
+                          Text("Left: " + _left.toString()),
+                          Text("Right: " + _right.toString()),
+                        ],
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                      ),
+                    )
+                  ],
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                ),
+
+                // actual controls section
+                Container(
+                  child: Row(
+                    children: <Widget>[
+                      // up down keys
+                      Column(
+                        children: <Widget>[
+                          GestureDetector(
+                            child: buildArrowIcons(Icons.arrow_drop_up, _up),
+                            onTapDown: _upPress,
+                            onTapUp: _upRelease,
+                          ),
+                          GestureDetector(
+                            child: buildArrowIcons(Icons.arrow_drop_down, _down),
+                            onTapDown: _downPress,
+                            onTapUp: _downRelease,
+                          ),
+                        ],
+                      ),
+
+                      // left right keys
+                      Row(
+                        children: <Widget>[
+                          GestureDetector(
+                            child: buildArrowIcons(Icons.arrow_left, _left),
+                            onTapDown: _leftPress,
+                            onTapUp: _leftRelease,
+                          ),
+                          GestureDetector(
+                            child: buildArrowIcons(Icons.arrow_right, _right),
+                            onTapDown: _rightPress,
+                            onTapUp: _rightRelease,
+                          ),
+                        ],
                       )
                     ],
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   ),
-                  //padding: EdgeInsets.only(top: 20),
+                  padding: EdgeInsets.only(left: 5, right: 5),
                 ),
-
-                Container(
-                  child: GestureDetector(
-                    child: buildArrowIcons(Icons.font_download, _automatic, 60),
-                    onTapDown: _automaticPress,
-                  ),
-                ),
-
-                // controls information
-                Container(
-                  child: Column(
-                    children: <Widget>[
-                      Text("Automatic: " + _automatic.toString()),
-                      Text("Up: " + _up.toString()),
-                      Text("Down: " + _down.toString()),
-                      Text("Left: " + _left.toString()),
-                      Text("Right: " + _right.toString()),
-                    ],
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                  ),
-                )
+                Container()
               ],
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.start,
-            ),
-            
-            // actual controls section
-            Container(
-              child: Row(
-                children: <Widget>[
-                  // up down keys
-                  Column(
-                    children: <Widget>[
-                      GestureDetector(
-                        child: buildArrowIcons(Icons.arrow_drop_up, _up),
-                        onTapDown: _upPress,
-                        onTapUp: _upRelease,
-                      ),
-                      GestureDetector(
-                        child: buildArrowIcons(Icons.arrow_drop_down, _down),
-                        onTapDown: _downPress,
-                        onTapUp: _downRelease,
-                      ),
-                    ],
-                  ),
-
-                  // left right keys
-                  Row(
-                    children: <Widget>[
-                      GestureDetector(
-                        child: buildArrowIcons(Icons.arrow_left, _left),
-                        onTapDown: _leftPress,
-                        onTapUp: _leftRelease,
-                      ),
-                      GestureDetector(
-                        child: buildArrowIcons(Icons.arrow_right, _right),
-                        onTapDown: _rightPress,
-                        onTapUp: _rightRelease,
-                      ),
-                    ],
-                  )
-                ],
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              ),
-              padding: EdgeInsets.only(left: 5, right: 5),
-            ),
-            Container()
-          ],
-          mainAxisAlignment: MainAxisAlignment.spaceBetween
-        )
+              mainAxisAlignment: MainAxisAlignment.spaceBetween
+          )
+      )
     );
   }
 
@@ -136,14 +187,18 @@ class _ControlsState extends State<ControlsInterface>{
 
   /// control functions
   // automatic
-  void _automaticPress(TapDownDetails t){
+  void automaticPress(TapDownDetails t){
     setState(() {
-      _automatic = !_automatic;
-
-      if(_automatic){
-        _up = _down = _left = _right = false;
-      }
+      _automaticPress();
     });
+  }
+
+  static void _automaticPress(){
+    automatic = !automatic;
+
+    if(automatic){
+      _up = _down = _left = _right = false;
+    }
 
     _sendMessage();
   }
@@ -152,7 +207,7 @@ class _ControlsState extends State<ControlsInterface>{
   // up
   void _upPress(TapDownDetails t){
     setState(() {
-      if(!_automatic) {
+      if(!automatic) {
         if (_down) {
           _up = _down = false;
         } else {
@@ -169,7 +224,7 @@ class _ControlsState extends State<ControlsInterface>{
       _up = false;
     });
 
-    if(!_automatic) {
+    if(!automatic) {
       _sendMessage();
     }
   }
@@ -178,7 +233,7 @@ class _ControlsState extends State<ControlsInterface>{
   // down
   void _downPress(TapDownDetails t){
     setState(() {
-      if(!_automatic) {
+      if(!automatic) {
         if (_up) {
           _up = _down = false;
         } else {
@@ -196,7 +251,7 @@ class _ControlsState extends State<ControlsInterface>{
     });
 
 
-    if(!_automatic) {
+    if(!automatic) {
       _sendMessage();
     }
   }
@@ -205,7 +260,7 @@ class _ControlsState extends State<ControlsInterface>{
   // left
   void _leftPress(TapDownDetails t){
     setState(() {
-      if(!_automatic) {
+      if(!automatic) {
         if (_right) {
           _left = _right = false;
         } else {
@@ -222,7 +277,7 @@ class _ControlsState extends State<ControlsInterface>{
       _left = false;
     });
 
-    if(!_automatic) {
+    if(!automatic) {
       _sendMessage();
     }
   }
@@ -231,7 +286,7 @@ class _ControlsState extends State<ControlsInterface>{
   // right
   void _rightPress(TapDownDetails t){
     setState(() {
-      if(!_automatic) {
+      if(!automatic) {
         if (_left) {
           _left = _right = false;
         } else {
@@ -248,25 +303,76 @@ class _ControlsState extends State<ControlsInterface>{
       _right = false;
     });
 
-    if(!_automatic) {
+    if(!automatic) {
       _sendMessage();
     }
   }
 
 
   /// send message
-  void _sendMessage(){
-    String aux = _automatic == true ? "1" : "0";
+  static void _sendMessage(){
+    var aux;
 
-    if(!_automatic) {
-      aux += _up == true ? '1' : '0';
-      aux += _down == true ? '1' : '0';
-      aux += _left == true ? '1' : '0';
-      aux += _right == true ? '1' : '0';
-    }else{
-      aux += "0000";
+    // automatic
+    if(automatic){
+      aux = _messageToSend.automatic;
     }
 
-    _bluetoothDevice.sendMessageViaBluetooth(aux);
+    else{
+
+      // up
+      if(_up){
+        if(_left){
+          aux = _messageToSend.up_left;
+        }else if(_right){
+          aux = _messageToSend.up_right;
+        }else{
+          aux = _messageToSend.up;
+        }
+      }
+
+      // down
+      else if(_down){
+        if(_left){
+          aux = _messageToSend.down_left;
+        }else if(_right){
+          aux = _messageToSend.down_right;
+        }else{
+          aux = _messageToSend.down;
+        }
+      }
+
+      // just left or right
+      else if(_left){
+        aux = _messageToSend.left;
+      }else if(_right){
+        aux = _messageToSend.right;
+      }
+
+      // stop
+      else{
+        aux = _messageToSend.stop;
+      }
+
+    }
+
+    _bluetoothDevice.sendMessageViaBluetooth(aux.index.toString());
+    print("printed: " + aux.toString() + " - " + aux.index.toString());
   }
+
+
+  /// push secondPage
+  static void pushSecondPage(){
+    Navigator.push(
+      _context,
+      MaterialPageRoute(builder: (context) => SensorInfoRoute()),
+    );
+  }
+
+
+  // get bluetooth device name
+  static String getBluetoothDeviceName(){
+    return _bluetoothDevice.getBluetoothDeviceName();
+  }
+
 }

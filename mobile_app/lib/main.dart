@@ -14,10 +14,35 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: Scaffold(
-        appBar: AppBar(title: Text("Robot Remote"),),
-        body: ControlsInterface(),
-      )
+      home: ControlsInterface(),
     );
   }
+
+  /*void _pushInfo(){
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(   // Add 20 lines from here...
+        builder: (BuildContext context) {
+          ControlsInterface();
+
+          final Iterable<ListTile> tiles = _saved.map(
+                (WordPair pair) {
+              return ListTile(
+                title: Text(
+                  pair.asPascalCase,
+                  style: _biggerFont,
+                ),
+              );
+            },
+          );
+          final List<Widget> divided = ListTile
+              .divideTiles(
+            context: context,
+            tiles: tiles,
+          )
+              .toList();
+        },
+      )
+    );
+  }*/
+
 }

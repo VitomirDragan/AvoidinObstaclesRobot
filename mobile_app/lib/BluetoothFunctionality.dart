@@ -3,35 +3,35 @@ import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 
 class BluetoothFunctionality{
 
-  FlutterBluetoothSerial _bluetooth = FlutterBluetoothSerial.instance;
+  static FlutterBluetoothSerial _bluetooth = FlutterBluetoothSerial.instance;
 
   // the actual device
   // if this is null, then there is no device
-  BluetoothDevice _device;
+  static BluetoothDevice _device;
 
   String s = "aaa";
 
   // constructor
  BluetoothFunctionality(){
-   _getBluetoothDevice();
+   connect();
  }
 
 
-  void _getBluetoothDevice(){
+  static void connect(){
     // future_bluetooth_serial library predefined type of mapped List
     Future<List> _devices = _bluetooth.getBondedDevices();
 
     _devices.then((element){
       _device = element.first;
       print(_device.name + " is the name");
-      _connect();
+      _actualConnect();
       return;
     });
   }
 
 
   // connects _bluetooth to the bluetooth _device
-  void _connect(){
+  static void _actualConnect(){
     print("trying to connect");
 
     if(_device != null){
