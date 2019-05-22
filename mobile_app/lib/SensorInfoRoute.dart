@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:async';
 
 import 'ControlsInterface.dart';
 import 'BluetoothFunctionality.dart';
@@ -10,7 +11,22 @@ class SensorInfoRoute extends StatefulWidget{
 }
 
 class SensorInfoRouteState extends State<SensorInfoRoute>{
+
+  String _temperature = "---";
+  String _humidity = "---";
+  String _co = "---";
+
   Widget build(BuildContext context){
+    new Timer(const Duration(seconds:1), (){
+      setState(() {
+        String aux = BluetoothFunctionality.readMessageFromBluetooth();
+        _temperature = aux.substring(0, 3);
+        _humidity = aux.substring(3, 6);
+        _co = aux.substring(6, 7);
+        print("aux " + aux);
+      });
+    });
+
     return Scaffold(
       appBar: AppBar(title: Text("Sensors"),),
       body: Container(
@@ -66,15 +82,25 @@ class SensorInfoRouteState extends State<SensorInfoRoute>{
                   });
                 },
               ),
-              padding: EdgeInsets.only(bottom: 200),
+              padding: EdgeInsets.only(bottom: 100),
             ),
 
             // sensor information
             Container(
               child: Column(
                 children: <Widget>[
-                  sensorInterfaceBuilder("CO", 11),
-                  sensorInterfaceBuilder("Light", 123),
+                  sensorInterfaceBuilder("Temperature", _temperature),
+                  sensorInterfaceBuilder("Humidity", _humidity),
+                  Container(
+                    child: Text(
+                      "CO",
+                      style: TextStyle(
+                        fontSize: 30,
+                        color: _co == "1" ? Colors.black: Colors.red
+                      ),
+                    ),
+                    padding: EdgeInsets.only(top: 80),
+                  ),
                 ],
               ),
             )
@@ -89,7 +115,7 @@ class SensorInfoRouteState extends State<SensorInfoRoute>{
 
 
   // sensor interface builder
-  Container sensorInterfaceBuilder(String sensorName, int sensorValue){
+  Container sensorInterfaceBuilder(String sensorName, String sensorValue){
     return Container(
       child: Row(
         children: <Widget>[
@@ -100,7 +126,7 @@ class SensorInfoRouteState extends State<SensorInfoRoute>{
             ),
           ),
           Text(
-            sensorValue.toString(),
+            sensorValue,
             style: TextStyle(
                 fontSize: 30,
             ),

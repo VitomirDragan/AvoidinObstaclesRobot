@@ -9,7 +9,8 @@ class BluetoothFunctionality{
   // if this is null, then there is no device
   static BluetoothDevice _device;
 
-  String s = "aaa";
+  String _deviceNameString = "aaa";
+  static String _sensorReadString = "bbb";
 
   // constructor
  BluetoothFunctionality(){
@@ -42,6 +43,8 @@ class BluetoothFunctionality{
           _bluetooth.connect(_device);
           print("connected");
         }else{
+          _bluetooth.disconnect();
+          _bluetooth.connect(_device);
           print("already connected connected");
         }
       });
@@ -55,10 +58,25 @@ class BluetoothFunctionality{
   void sendMessageViaBluetooth(String message){
     _bluetooth.isConnected.then((isConnected){
       if(isConnected){
-        _bluetooth.write(message);
+        _bluetooth.write(message[0]);
         print("sent " + message);
       }
     });
+  }
+
+
+  // read message from _bluetooth
+  static String readMessageFromBluetooth(){
+    _bluetooth.isConnected.then((isConnected){
+      if(isConnected){
+        _bluetooth.onRead().listen((msg){
+          _sensorReadString = msg;
+        });
+      }
+    });
+
+    //print("aux = " +  _sensorReadString);
+    return _sensorReadString;
   }
 
 
@@ -66,21 +84,21 @@ class BluetoothFunctionality{
   // used to display the name in the interface
   String getBluetoothDeviceName(){
     if(_device == null){
-      s = "none";
+      _deviceNameString = "none";
     }else{
       _bluetooth.isAvailable.then((isConnected) {
         if(isConnected){
-          s = _device.name;
+          _deviceNameString = _device.name;
         }else{
-          s =  "not connected";
+          _deviceNameString =  "not connected";
         }
 
-        return s;
+        return _deviceNameString;
       });
     }
 
     //print("s is " + s);
-    return s;
+    return _deviceNameString;
   }
 
 }

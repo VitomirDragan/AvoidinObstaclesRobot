@@ -34,6 +34,7 @@ public:
       automatic = up = down = left = right = false;
       
       readedValue = mySerial.read() - '0';
+      
       mySerial.read();
 
       // stop and automatic
@@ -64,6 +65,37 @@ public:
       }else if(readedValue == bl_down_right){
         down = right = true;
       }
+     // printCeva();
     }
+  }
+
+  void sendToBluetoothDevide(char message){
+    mySerial.write(message);
+  }
+
+  void sendToBluetoothDevide(int temperature, int humidity, int CO){
+    char aux[9];
+    for(int i = 3; i >= 1; i--){
+      aux[i] = temperature%10 + '0';
+      temperature /= 10;
+    }
+    for(int i = 6; i >= 4; i--){
+      aux[i] = humidity%10 + '0';
+      humidity /= 10;
+    }
+    aux[7] = CO + '0';
+    
+    aux[0] = '0';
+    aux[8] = '\0';
+    mySerial.write(aux);
+  }
+
+  void printCeva(){
+    Serial.println(automatic);
+    Serial.println(up);
+    Serial.println(down);
+    Serial.println(left);
+    Serial.println(right);
+    Serial.println("");
   }
 };
